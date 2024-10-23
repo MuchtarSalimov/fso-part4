@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs HTTP/1.1
+content-type: application/json
+
+{
+  "title": "A Game of Thrones",
+  "author": "George R. R. Marting",
+  "url": "https://www.goodreads.com/book/show/13496.A_Game_of_Thrones",
+  "likes": 3000
+}
