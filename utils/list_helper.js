@@ -42,20 +42,18 @@ const mostBlogs = (blogs) => {
 const mostLikes = (blogs) => {
   if (blogs.length === 0 )
     return null
-  
-  const likesPerAuthor = {}
+  const authorLikeTotals = []
 
-  blogs.forEach((blog) => {
-    if ( !likesPerAuthor.hasOwnProperty(blog.author) ) {
-      likesPerAuthor[blog.author] = blog.likes
-    } else {
-      likesPerAuthor[blog.author] += blog.likes
-    }
+  const blogInfoGroupedByAuthor = _.groupBy(blogs, 'author')
+  Object.entries(blogInfoGroupedByAuthor).forEach(([ key, value ]) => {
+    authorLikeTotals.push({ author: key, likes: _.sumBy(value, 'likes')})
   })
 
-  const [author, likes] = _.maxBy(Object.entries(likesPerAuthor), element => element[1])
+  const mostLikedAuthor = _.maxBy(authorLikeTotals, element => {
+    return element.likes
+  })
 
-  return { author, likes }
+  return mostLikedAuthor
 }
 
 module.exports = {
