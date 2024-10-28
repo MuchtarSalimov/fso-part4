@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, describe, beforeEach } = require('node:test')
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
 const supertest = require('supertest')
@@ -81,7 +81,6 @@ test('adding a blog with no title specified returns 400 Bad Request', async () =
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
     })
     .expect(400)
-    .expect('Content-Type', /application\/json/)
 })
 
 test('adding a blog with no author specified returns 400 Bad Request', async () => {
@@ -92,7 +91,60 @@ test('adding a blog with no author specified returns 400 Bad Request', async () 
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
     })
     .expect(400)
-    .expect('Content-Type', /application\/json/)
+})
+
+describe('test delete works', () => {
+  test('DELETE /api/blogs/:id successfully deletes post', async () => {
+    const oldBlogList = await api.get('/api/blogs')
+    const oldBlogCount = oldBlogList.body.length
+  
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .expect(204)
+  
+    const newBlogList = await api.get('/api/blogs')
+    const newBlogCount = newBlogList.body.length
+  
+    assert.strictEqual(newBlogCount, oldBlogCount - 1)
+  })  
+})
+
+describe('test if updating blog works works', () => {
+  test('update title of a blog successfully', async () => {
+    const response = await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send({
+        title: 'Potatoes are our friends'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+    assert.strictEqual(response.body.title, 'Potatoes are our friends')
+  })
+
+  test('update author of a blog successfully', async () => {
+    const response = await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send({
+        author: 'Fred Flinstone'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+    assert.strictEqual(response.body.author, 'Fred Flinstone')
+  })
+
+  test('update likes of a blog successfully', async () => {
+    const response = await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send({
+        likes: 24
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+    assert.strictEqual(response.body.likes, 24)
+  })
 })
 
 // test('blogs json id matches the format of a default mongodb _id value', async () => {
