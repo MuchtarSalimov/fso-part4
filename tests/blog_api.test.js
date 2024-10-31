@@ -28,7 +28,7 @@ test('number of blogs in initial test data is 6', async () => {
   assert.strictEqual(response.body.length, 6)
 })
 
-test('GET /api/blogs provies id instead of _id', async () => {
+test('GET /api/blogs provides id instead of _id', async () => {
   const response = await api
     .get('/api/blogs')
     .expect(200)
