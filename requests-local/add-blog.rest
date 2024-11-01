@@ -1,5 +1,6 @@
 POST http://localhost:3003/api/blogs HTTP/1.1
-content-type: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhcm5hY2xlIiwiaWQiOiI2NzI0MDNmZjQ3MDM2ZDZlNmMwYzQwOTkiLCJpYXQiOjE3MzA0OTg4ODV9.XnvGNQCQUJECVToQJOcB-o4b4BLTH2L8h1kw83BNlis
 
 {
   "title": "A Game of Thrones",

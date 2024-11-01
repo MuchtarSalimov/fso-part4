@@ -20,20 +20,35 @@ blogsRouter.put('/:id', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  const userId = request.user
+  if ( !userId ) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+
+  if ( blog.user.toString() !== userId.toString() ) {
+    return response.status(400).json({ error: 'owner of blog does not match token' })
+  }
+
   await Blog.deleteOne({ _id: request.params.id })
+
   response.status(204).end()
 })
 
 blogsRouter.post('/', async (request, response) => {
   const input = request.body
+  const userId = request.user
+
+  if ( !userId ) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
 
   if ( !input.title || !input.author ) {
-    response.status(400).end()
+    response.status(400).json({ error: 'title or author missing' })
   } else {
 
-
-
-    const user = await User.findOne({})
+    const user = await User.findById(userId)
 
     const blog = new Blog({
       title: input.title,
@@ -43,15 +58,11 @@ blogsRouter.post('/', async (request, response) => {
       user: user._id
     })
     const result = await blog.save()
-    console.log('result', result)
-
 
     const updateObject = {
       $push: { blogs: result._id }
     }
-    const randomUser = await User.findOneAndUpdate({ _id: user.id }, updateObject, { new: true })
-
-    console.log('randomUser', randomUser)
+    await User.findOneAndUpdate({ _id: user.id }, updateObject, { new: true })
 
     response.status(201).json(result)  
   }

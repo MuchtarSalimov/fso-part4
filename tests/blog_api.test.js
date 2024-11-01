@@ -8,6 +8,17 @@ const helper = require('./test_helper')
 
 const api = supertest(app)
 
+const getLoginToken = async (username, password) => {
+    const response = await api
+      .post('/api/login')
+      .send({
+        "username": username,
+        "password": password
+      })
+
+      return response.body.token
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   
@@ -39,6 +50,8 @@ test('GET /api/blogs provides id instead of _id', async () => {
 })
 
 test('POST /api/blogs successfully adds a new blog', async () => {
+  const loginToken = await getLoginToken('root', 'abc')
+
   const oldBlogList = await api.get('/api/blogs')
   const oldBlogCount = oldBlogList.body.length
 
@@ -50,6 +63,7 @@ test('POST /api/blogs successfully adds a new blog', async () => {
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
       "likes": 30
     })
+    .set({ Authorization: `Bearer ${ loginToken }` })
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -60,6 +74,8 @@ test('POST /api/blogs successfully adds a new blog', async () => {
 })
 
 test('adding blog defaults likes to 0 if not specified', async () => {
+  const loginToken = await getLoginToken('root', 'abc')
+
   const result = await api
     .post('/api/blogs')
     .send( {
@@ -67,6 +83,7 @@ test('adding blog defaults likes to 0 if not specified', async () => {
       "author": "John Swan",
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
     })
+    .set({ Authorization: `Bearer ${ loginToken }` })
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -74,32 +91,52 @@ test('adding blog defaults likes to 0 if not specified', async () => {
 })
 
 test('adding a blog with no title specified returns 400 Bad Request', async () => {
+  const loginToken = await getLoginToken('root', 'abc')
+
   await api
     .post('/api/blogs')
     .send( {
       "author": "John Swan",
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
     })
+    .set({ Authorization: `Bearer ${ loginToken }` })
     .expect(400)
 })
 
 test('adding a blog with no author specified returns 400 Bad Request', async () => {
+  const loginToken = await getLoginToken('root', 'abc')
+
   await api
     .post('/api/blogs')
     .send( {
       "title": "My favourite burger is a backyard barbecue burger",
       "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
     })
+    .set({ Authorization: `Bearer ${ loginToken }` })
     .expect(400)
+})
+
+test('adding a blog without using a token in the request returns 401 Unauthorized', async () => {
+  await api
+    .post('/api/blogs')
+    .send( {
+      "title": "My favourite burger is a backyard barbecue burger",
+      "author": "John Swan",
+      "url": "https://www.JohnSwanBlog.com/my_favourite_burger",
+    })
+    .expect(401)
 })
 
 describe('test delete works', () => {
   test('DELETE /api/blogs/:id successfully deletes post', async () => {
+    const loginToken = await getLoginToken('root', 'abc')
+
     const oldBlogList = await api.get('/api/blogs')
     const oldBlogCount = oldBlogList.body.length
   
     await api
       .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .set({ Authorization: `Bearer ${ loginToken }` })
       .expect(204)
   
     const newBlogList = await api.get('/api/blogs')
