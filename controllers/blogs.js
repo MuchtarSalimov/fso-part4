@@ -9,11 +9,19 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
+  const userId = request.user
   const updateObject = {}
+
+  if ( !userId ) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
 
   if ( request.body.title )  { updateObject['title'] = request.body.title }
   if ( request.body.author ) { updateObject['author'] = request.body.author }
   if ( request.body.likes )  { updateObject['likes'] = request.body.likes }
+  if ( request.body.url )  { updateObject['url'] = request.body.url }
+  if ( request.body.user )  { updateObject['user'] = request.body.user }
+  if ( request.body.id )  { updateObject['_id'] = request.body.id }
 
   const result = await Blog.findOneAndUpdate({ _id: request.params.id }, updateObject, { new: true })
   response.status(200).send(result)

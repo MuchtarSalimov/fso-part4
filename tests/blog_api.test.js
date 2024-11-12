@@ -148,11 +148,13 @@ describe('test delete works', () => {
 
 describe('test if updating blog works works', () => {
   test('update title of a blog successfully', async () => {
+    const loginToken = await getLoginToken('root', 'abc')
     const response = await api
       .put('/api/blogs/5a422a851b54a676234d17f7')
       .send({
         title: 'Potatoes are our friends'
       })
+      .set({ Authorization: `Bearer ${ loginToken }` })
       .expect(200)
       .expect('Content-Type', /application\/json/)
   
@@ -160,11 +162,14 @@ describe('test if updating blog works works', () => {
   })
 
   test('update author of a blog successfully', async () => {
+    const loginToken = await getLoginToken('root', 'abc')
+
     const response = await api
       .put('/api/blogs/5a422a851b54a676234d17f7')
       .send({
         author: 'Fred Flinstone'
       })
+      .set({ Authorization: `Bearer ${ loginToken }` })
       .expect(200)
       .expect('Content-Type', /application\/json/)
   
@@ -172,11 +177,14 @@ describe('test if updating blog works works', () => {
   })
 
   test('update likes of a blog successfully', async () => {
+    const loginToken = await getLoginToken('root', 'abc')
+
     const response = await api
       .put('/api/blogs/5a422a851b54a676234d17f7')
       .send({
         likes: 24
       })
+      .set({ Authorization: `Bearer ${ loginToken }` })
       .expect(200)
       .expect('Content-Type', /application\/json/)
   

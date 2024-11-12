@@ -1,0 +1,5 @@
+POST http://localhost:5173/api/blogs HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhcm5hY2xlIiwiaWQiOiI2NzI0MDNmZjQ3MDM2ZDZlNmMwYzQwOTkiLCJpYXQiOjE3MzA3NTc5MzZ9.F3qinXN_5gloKlnQlcXaW-FW2iMP6QfkEIRooHftVnw
+
+{"title":"The Alchemist","author":"Paulo Coelho","url":"https://www.paulocoelho.com/thealchemist"}
